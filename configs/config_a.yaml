@@ -1,0 +1,65 @@
+
+experiment:
+  name: 'experiment_1'
+  description: 'Baseline model with default settings'
+  seed: 42
+  timestamp: null
+
+model:
+  name: 'ModelC'
+  params:
+    num_classes: 2
+
+loss:
+  name: 'LossA'
+
+training:
+  batch_size: 128
+  learning_rate: 0.001
+  epochs: 120
+  optimizer: 'Adam'
+  optimizer_params:
+    weight_decay: 0.0001
+  scheduler:
+    name: 'StepLR'
+    params:
+      step_size: 10
+      gamma: 0.1
+
+data:
+  data_dir: '/home/aivar/deep/classify/datasets/dog&cat'
+  size: &size 224  # Define the size once with an anchor
+
+  num_workers: 4
+  augmentations:
+    train:
+      - Resize: 
+          size: [*size, *size]  # Reference the size using the alias
+      - RandomHorizontalFlip
+      - RandomCrop:
+          size: *size
+      - ToTensor
+      - Normalize:
+          mean: [0.485, 0.456, 0.406]
+          std: [0.229, 0.224, 0.225]
+    eval: 
+      - Resize: 
+          size: [*size, *size]  # Reference the size using the alias
+      - CenterCrop:
+          size: *size
+      - ToTensor
+      - Normalize:
+          mean: [0.485, 0.456, 0.406]
+          std: [0.229, 0.224, 0.225]
+
+
+
+logging:
+  save_dir: './checkpoints'
+  save_all_ckpt: False
+  save_all_best_ckpt: True
+  log_interval: 10
+  tensorboard: True
+
+device: 'cuda'  # or 'cpu'
+
